@@ -143,4 +143,48 @@ describe("SimpleTransfer", function () {
         expect(ownerBalanceAtFinal+transferTransaction.gasPrice*gasUsed).to.equal(ownerBalanceAtFirst) 
         expect(recipientBalanceAtFirst).to.above(await ethers.provider.getBalance(recipient.address))
     });
+
+    it("test multiple owners", async function () {
+        const amount = ethers.parseEther("1");
+        const initialRecipient2Balance = await ethers.provider.getBalance(recipient2.address);
+        const fundTransaction = await owner.sendTransaction({
+            to: await simpleTransfer.getAddress(),
+            value: amount * (3n), // Make sure the contract has enough balance
+        });
+
+        await fundTransaction.wait();
+        await simpleTransfer.connect(owner).setBackUpOwner(recipient.address);
+        await simpleTransfer.connect(recipient).payProviders([{
+            name: recipient2.address,
+            value: amount,
+        }]);
+        await simpleTransfer.connect(owner).payProviders([{
+            name: recipient2.address,
+            value: amount,
+        }]);
+        try { // testing someone else cant launch the payment
+            let randomUserTryingToSignTheTx = (await ethers.getSigners())[4]
+            await simpleTransfer.connect(randomUserTryingToSignTheTx).payProviders([{
+                name: recipient2.address,
+                value: amount,
+            }]);
+        } catch (e) {
+            expect(String(e)).to.include("reverted with reason string 'Only the owner / backup can call this function'")
+        }
+        const finalRecipient2Balance = await ethers.provider.getBalance(recipient2.address);
+        expect(finalRecipient2Balance).to.equal(initialRecipient2Balance + (amount * 2n))
+
+        // now that we have 2 owners and tested they work lets remove one and see it still works
+        await simpleTransfer.connect(owner).setBackUpOwner(owner.address);
+        try { // testing someone else cant launch the payment
+            await simpleTransfer.connect(recipient).payProviders([{
+                name: recipient2.address,
+                value: amount,
+            }]);
+        } catch (e) {
+            // expect the temporary owner to be removed. (recipient)
+            expect(String(e)).to.include("reverted with reason string 'Only the owner / backup can call this function'")
+        }
+    });
+
 });
