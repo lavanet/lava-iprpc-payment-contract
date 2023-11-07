@@ -12,15 +12,11 @@ contract SimpleTransfer {
 
     function payProviders(Provider[] memory providers) public {
         require(msg.sender == owner || msg.sender == backupOwner, "Only the owner / backup can call this function");
-        uint256 totalAmount = 0;
-        uint256 balanceAtStart = address(this).balance;
         for (uint256 i = 0; i < providers.length; i++) {
             address payable providerAddress = payable(providers[i].name);
             uint256 amount = providers[i].value;
-            totalAmount += amount;
             providerAddress.transfer(amount);
         }
-        require(balanceAtStart >= totalAmount, "Insufficient balance in the contract");
     }
 
     function setOwner(address newOwner) public {
