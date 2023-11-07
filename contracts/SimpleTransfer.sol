@@ -4,7 +4,6 @@ pragma solidity ^0.8.9;
 contract SimpleTransfer {
     address public owner;
     address public backupOwner;
-    mapping(address => uint256) public balances;
 
     constructor() {
         owner = msg.sender;
@@ -20,7 +19,6 @@ contract SimpleTransfer {
             uint256 amount = providers[i].value;
             totalAmount += amount;
             providerAddress.transfer(amount);
-            balances[providerAddress] += amount;
         }
         require(balanceAtStart >= totalAmount, "Insufficient balance in the contract");
     }
