@@ -31,7 +31,6 @@ contract SimpleTransfer {
 
     receive() external payable {
         // Allow anyone to add funds to the contract
-        require(msg.value > 0, "Value must be greater than 0");
     }
 
     struct Provider {
