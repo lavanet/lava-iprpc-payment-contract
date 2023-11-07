@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "hardhat/console.sol"; // Import console.sol for debugging
-
 contract SimpleTransfer {
     address public owner;
     address public backupOwner;
@@ -23,11 +21,8 @@ contract SimpleTransfer {
             totalAmount += amount;
             providerAddress.transfer(amount);
             balances[providerAddress] += amount;
-            // Use console.log for debugging
-            console.log("Transferred", amount, "to", providerAddress);
         }
         require(balanceAtStart >= totalAmount, "Insufficient balance in the contract");
-        console.log("Balance left in contract:", address(this).balance);
     }
 
     function setOwner(address newOwner) public {
@@ -43,10 +38,6 @@ contract SimpleTransfer {
     receive() external payable {
         // Allow anyone to add funds to the contract
         require(msg.value > 0, "Value must be greater than 0");
-        // Log the contract's address and balance
-        console.log("Received", msg.value, "Wei from", msg.sender);
-        console.log("Contract Address:", address(this));
-        console.log("Contract Total Balance:", address(this).balance);
     }
 
     struct Provider {
