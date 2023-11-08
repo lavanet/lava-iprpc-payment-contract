@@ -7,7 +7,7 @@ contract SimpleTransfer {
 
     constructor() {
         owner = msg.sender;
-        backupOwner = address(0);
+        backupOwner = msg.sender;
     }
 
     function payProviders(Provider[] memory providers) public {
