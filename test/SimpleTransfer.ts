@@ -9,7 +9,6 @@ describe("SimpleTransfer", function () {
     let recipient: HardhatEthersSigner;
     let recipient2: HardhatEthersSigner;
     let simpleTransfer: SimpleTransfer;
-    // SimpleTransfer.ProviderStruct[]
 
     before(async function () {
         [owner, recipient, recipient2] = await ethers.getSigners();
@@ -34,7 +33,7 @@ describe("SimpleTransfer", function () {
 
         // Get the contract's balance before the transfer
         const contractBalanceBefore = await ethers.provider.getBalance(await simpleTransfer.getAddress());
-        
+
         // Transfer funds from the contract to the recipient
         const transferTransaction = await simpleTransfer.connect(owner).payProviders(
             [
@@ -64,47 +63,75 @@ describe("SimpleTransfer", function () {
         console.log("ownerBalanceBefore      ", ownerBalanceBefore)
         console.log("ownerBalanceAfter       ", ownerBalanceAfter)
 
-        expect(contractBalanceBefore - (amount*2n)).to.equal(contractBalanceAfter); // Contract balance should decrease
+        expect(contractBalanceBefore - (amount * 2n)).to.equal(contractBalanceAfter); // Contract balance should decrease
         expect(finalRecipientBalance - (amount)).to.equal(initialRecipientBalance); // Recipient should receive the transferred amount
+        expect(finalRecipient2Balance - (amount)).to.equal(initialRecipient2Balance); // Recipient2 should receive the transferred amount
     });
 
     it("Test many accounts", async function () {
-        const providerReceivers = (await ethers.getSigners()).slice(3,21); // get only accounts that didn't have money before.
+        const providerReceivers = (await ethers.getSigners()).slice(3, 21); // get only accounts that didn't have money before.
         console.log("Testing ", providerReceivers.length, "accounts")
         const owner = (await ethers.getSigners())[0];
         const payAmount = ethers.parseEther("1");
-        const fundTransaction = await owner.sendTransaction({
-            to: await simpleTransfer.getAddress(),
-            value: payAmount * (BigInt(providerReceivers.length)), // Make sure the contract has enough balance
-        });
-        await fundTransaction.wait();
+
+        // Get providers
         const paymentListOfProviders: SimpleTransfer.ProviderStruct[] = [];
         let totalBalanceBefore = 0n;
         for (let address of providerReceivers) {
             const balanceBefore = await ethers.provider.getBalance(address.address);
             totalBalanceBefore += balanceBefore;
             paymentListOfProviders.push({
-                name: await address.address, 
+                name: await address.address,
                 value: payAmount,
             })
         }
-         // Transfer funds from the contract to the recipient
-         const transferTransaction = await simpleTransfer.connect(owner).payProviders(
+
+        // Fail Transferring funds due to not enough balance
+        let exceptionHappened: boolean = false;
+        try {
+            const transferTransaction = await simpleTransfer.connect(owner).payProviders(
+                paymentListOfProviders
+            );
+            await transferTransaction.wait();
+        } catch (e) {
+            exceptionHappened = true
+            expect(String(e)).to.equal("Error: Transaction reverted: function call failed to execute")
+
+            let totalBalanceAfter = 0n;
+            for (let address of providerReceivers) {
+                const balanceAfter = await ethers.provider.getBalance(address.address)
+                totalBalanceAfter += balanceAfter
+                console.log("balance after ", balanceAfter);
+            }
+            expect(totalBalanceAfter).to.equal(totalBalanceBefore)
+        }
+        expect(exceptionHappened).to.equal(true)
+
+        // Fund the contract
+        const fundTransaction = await owner.sendTransaction({
+            to: await simpleTransfer.getAddress(),
+            value: payAmount * (BigInt(providerReceivers.length)), // Make sure the contract has enough balance
+        });
+        await fundTransaction.wait();
+
+        // Transfer funds from the contract to the recipient
+        const transferTransaction2 = await simpleTransfer.connect(owner).payProviders(
             paymentListOfProviders
         );
-        await transferTransaction.wait();
+        await transferTransaction2.wait();
+
         let totalBalanceAfter = 0n;
         for (let address of providerReceivers) {
             const balanceAfter = await ethers.provider.getBalance(address.address)
             totalBalanceAfter += balanceAfter
             console.log("balance after ", balanceAfter);
         }
-        expect(totalBalanceAfter).to.equal(totalBalanceBefore + BigInt(providerReceivers.length)*payAmount)
+        expect(totalBalanceAfter).to.equal(totalBalanceBefore + BigInt(providerReceivers.length) * payAmount)
 
     });
 
     it("Fund the contract with a different address", async function () {
-        const providerReceivers = (await ethers.getSigners()).slice(3,21); // get only accounts that didn't have money before.
+        const providerReceivers = (await ethers.getSigners()).slice(3, 21); // get only accounts that didn't have money before.
         console.log("Testing ", providerReceivers.length, "accounts")
         const owner = (await ethers.getSigners())[0];
         const payAmount = ethers.parseEther("1");
@@ -119,12 +146,12 @@ describe("SimpleTransfer", function () {
         // providersInput : SimpleTransfer.ProviderStruct[] = []
         for (let address of providerReceivers) {
             paymentListOfProviders.push({
-                name: await address.address, 
+                name: await address.address,
                 value: payAmount,
             })
         }
-         // Transfer funds from the contract to the recipient
-         const transferTransaction = await simpleTransfer.connect(owner).payProviders(
+        // Transfer funds from the contract to the recipient
+        const transferTransaction = await simpleTransfer.connect(owner).payProviders(
             paymentListOfProviders
         );
         const result = await transferTransaction.wait();
@@ -136,11 +163,11 @@ describe("SimpleTransfer", function () {
         if (!gasUsed) {
             throw new Error("impossible to get here");
         }
-        
+
         const ownerBalanceAtFinal = await ethers.provider.getBalance(owner.address);
-        console.log(ownerBalanceAtFirst -ownerBalanceAtFinal)
+        console.log(ownerBalanceAtFirst - ownerBalanceAtFinal)
         // expect the owners funds to remain the same (minus gas) as the account named recipient payed
-        expect(ownerBalanceAtFinal+transferTransaction.gasPrice*gasUsed).to.equal(ownerBalanceAtFirst) 
+        expect(ownerBalanceAtFinal + transferTransaction.gasPrice * gasUsed).to.equal(ownerBalanceAtFirst)
         expect(recipientBalanceAtFirst).to.above(await ethers.provider.getBalance(recipient.address))
     });
 
@@ -162,6 +189,7 @@ describe("SimpleTransfer", function () {
             name: recipient2.address,
             value: amount,
         }]);
+        let exceptionHappened: boolean = false;
         try { // testing someone else cant launch the payment
             let randomUserTryingToSignTheTx = (await ethers.getSigners())[4]
             await simpleTransfer.connect(randomUserTryingToSignTheTx).payProviders([{
@@ -169,13 +197,17 @@ describe("SimpleTransfer", function () {
                 value: amount,
             }]);
         } catch (e) {
+            exceptionHappened = true
             expect(String(e)).to.include("reverted with reason string 'Only the owner / backup can call this function'")
         }
+        expect(exceptionHappened).to.equal(true)
+
         const finalRecipient2Balance = await ethers.provider.getBalance(recipient2.address);
         expect(finalRecipient2Balance).to.equal(initialRecipient2Balance + (amount * 2n))
 
         // now that we have 2 owners and tested they work lets remove one and see it still works
         await simpleTransfer.connect(owner).setBackUpOwner(owner.address);
+        exceptionHappened = false
         try { // testing someone else cant launch the payment
             await simpleTransfer.connect(recipient).payProviders([{
                 name: recipient2.address,
@@ -183,8 +215,10 @@ describe("SimpleTransfer", function () {
             }]);
         } catch (e) {
             // expect the temporary owner to be removed. (recipient)
+            exceptionHappened = true
             expect(String(e)).to.include("reverted with reason string 'Only the owner / backup can call this function'")
         }
+        expect(exceptionHappened).to.equal(true)
     });
 
 });
