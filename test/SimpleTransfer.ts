@@ -21,6 +21,13 @@ describe("SimpleTransfer", function () {
         const initialRecipientBalance = await ethers.provider.getBalance(recipient.address);
         const initialRecipient2Balance = await ethers.provider.getBalance(recipient2.address);
 
+        simpleTransfer.getOwner().then((tOwner) => {
+            expect(tOwner).to.equal(owner.address)
+        })
+        simpleTransfer.getBackupOwner().then((tBackupOwner) => {
+            expect(tBackupOwner).to.equal(owner.address)
+        })
+
         const amount = ethers.parseEther("1");
 
         // Send some Ether to the owner to fund the contract

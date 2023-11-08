@@ -3,12 +3,12 @@ import "@nomicfoundation/hardhat-toolbox";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
-  /*networks: {
+  networks: {
     evmos: {
       url: `https://evmos-testnet.lava.build`,
-      accounts: [`<EVMOS-ACCOUNT-PRIVATE-KEY-HERE>`],
+      //accounts: [`<EVMOS-ACCOUNT-PRIVATE-KEY-HERE>`],
     },
-  }*/
+  }
 };
 
 export default config;
