@@ -29,6 +29,14 @@ contract SimpleTransfer {
         backupOwner = newBackupOwner;
     }
 
+    function getOwner() public view returns (address) {
+        return owner;
+    }
+
+    function getBackupOwner() public view returns (address) {
+        return backupOwner;
+    }
+    
     receive() external payable {
         // Allow anyone to add funds to the contract
     }
