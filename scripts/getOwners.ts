@@ -10,7 +10,7 @@ async function main() {
     })
 
     simpleTransfer.getBackupOwner().then((backupOwner) => {
-        console.log("getOwner", backupOwner)
+        console.log("getBackupOwner", backupOwner)
     })
 }
 
