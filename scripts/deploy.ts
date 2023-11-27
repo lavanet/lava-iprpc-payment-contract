@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 async function main() {
   const lockedAmount = ethers.parseEther("0"); // Update to your desired value
 
-  const lock = await ethers.deployContract("SimpleTransfer", {
+  const lock = await ethers.deployContract("LavaEvmosProviderPaymentContract", {
     value: lockedAmount,
   });
 
