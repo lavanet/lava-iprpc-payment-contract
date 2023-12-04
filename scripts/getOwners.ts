@@ -1,10 +1,10 @@
 import { ethers } from "hardhat";
-import { SimpleTransfer } from "../typechain-types/SimpleTransfer"
+import { LavaEvmosIpRPCDistribution } from "../typechain-types/LavaEvmosIpRPCDistribution"
 
 async function main() {
-    let simpleTransfer: SimpleTransfer;
+    let simpleTransfer: LavaEvmosIpRPCDistribution;
 
-    simpleTransfer = await ethers.getContractAt("SimpleTransfer", process.env.contract as string);
+    simpleTransfer = await ethers.getContractAt("LavaEvmosIpRPCDistribution", process.env.contract as string);
     simpleTransfer.getOwner().then((owner) => {
         console.log("getOwner", owner)
     })

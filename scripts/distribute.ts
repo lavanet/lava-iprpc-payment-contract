@@ -1,14 +1,14 @@
 import { ethers } from "hardhat";
-import { SimpleTransfer } from "../typechain-types/SimpleTransfer"
+import { LavaEvmosIpRPCDistribution } from "../typechain-types/LavaEvmosIpRPCDistribution"
 
 async function main() {
-    let simpleTransfer: SimpleTransfer;
+    let simpleTransfer: LavaEvmosIpRPCDistribution;
     let contractAddress = await ethers.getAddress(process.env.contract as string)
     let providerAddress = await ethers.getAddress(process.env.provider as string)
 
     const signer = await ethers.provider.getSigner();
     console.log(signer.address)
-    simpleTransfer = await ethers.getContractAt("SimpleTransfer", contractAddress as string);
+    simpleTransfer = await ethers.getContractAt("LavaEvmosIpRPCDistribution", contractAddress as string);
     
     let contractBalance = 0n;
     await ethers.provider.getBalance(contractAddress).then((balance) => {

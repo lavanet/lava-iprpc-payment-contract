@@ -1,18 +1,18 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import { SimpleTransfer } from "../typechain-types/SimpleTransfer"
+import { LavaEvmosIpRPCDistribution } from "../typechain-types/LavaEvmosIpRPCDistribution"
 
 
-describe("SimpleTransfer", function () {
+describe("LavaEvmosIpRPCDistribution", function () {
     let owner: HardhatEthersSigner;
     let recipient: HardhatEthersSigner;
     let recipient2: HardhatEthersSigner;
-    let simpleTransfer: SimpleTransfer;
+    let simpleTransfer: LavaEvmosIpRPCDistribution;
 
     before(async function () {
         [owner, recipient, recipient2] = await ethers.getSigners();
-        const SimpleTransferFactory = await ethers.getContractFactory("SimpleTransfer");
+        const SimpleTransferFactory = await ethers.getContractFactory("LavaEvmosIpRPCDistribution");
         simpleTransfer = await SimpleTransferFactory.deploy();
     });
 
@@ -82,7 +82,7 @@ describe("SimpleTransfer", function () {
         const payAmount = ethers.parseEther("1");
 
         // Get providers
-        const paymentListOfProviders: SimpleTransfer.ProviderStruct[] = [];
+        const paymentListOfProviders: LavaEvmosIpRPCDistribution.ProviderStruct[] = [];
         let totalBalanceBefore = 0n;
         for (let address of providerReceivers) {
             const balanceBefore = await ethers.provider.getBalance(address.address);
@@ -149,8 +149,8 @@ describe("SimpleTransfer", function () {
             value: payAmount * (BigInt(providerReceivers.length)), // Make sure the contract has enough balance
         });
         await fundTransaction.wait();
-        const paymentListOfProviders: SimpleTransfer.ProviderStruct[] = [];
-        // providersInput : SimpleTransfer.ProviderStruct[] = []
+        const paymentListOfProviders: LavaEvmosIpRPCDistribution.ProviderStruct[] = [];
+        // providersInput : LavaEvmosIpRPCDistribution.ProviderStruct[] = []
         for (let address of providerReceivers) {
             paymentListOfProviders.push({
                 name: await address.address,

@@ -9,7 +9,9 @@
     "hardhat": "^2.18.1"
   },
   "scripts": {
-    "test": "npx hardhat compile; npx hardhat test"
+    "test": "npx hardhat compile; npx hardhat test",
+    "deploy_evmos": "npx hardhat run --network arbitrumt scripts/deploy_evmos.ts",
+    "deploy_axelar": "npx hardhat run --network arbitrumt scripts/deploy_axelar.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
