@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import { LavaEvmosIpRPCDistribution } from "../typechain-types/LavaEvmosIpRPCDistribution"
+import { LavaEvmosIpRPCDistribution } from "../typechain-types"
 
 
 describe("LavaEvmosIpRPCDistribution", function () {
