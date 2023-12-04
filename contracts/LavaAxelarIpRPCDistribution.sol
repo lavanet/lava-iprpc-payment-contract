@@ -1,7 +1,7 @@
 pragma solidity ^0.8.9;
 // SPDX-License-Identifier: MIT
 
-import "../node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract LavaAxelarIpRPCDistribution {
     using SafeERC20 for IERC20;

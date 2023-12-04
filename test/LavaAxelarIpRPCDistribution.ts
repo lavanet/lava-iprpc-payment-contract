@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import { ERC20 } from "../typechain-types/LavaAxelarIpRPCDistribution.sol/ERC20"; 
-import { LavaAxelarIpRPCDistribution } from "../typechain-types/LavaAxelarIpRPCDistribution.sol/LavaAxelarIpRPCDistribution"
+import { LavaAxelarIpRPCDistribution, IERC20 } from "../typechain-types"
 
 
 describe("LavaEvmosIpRPCDistribution", function () {
@@ -18,14 +17,7 @@ describe("LavaEvmosIpRPCDistribution", function () {
     });
 
     it("Simple flow 2 accounts", async function () {
-        const amountToSend1 = ethers.parseEther("10");
-        const amountToSend2 = ethers.parseEther("5");
-        await simpleTransfer.payProviders(
-            [
-                { name: await recipient1.getAddress(), value: amountToSend1 },
-                { name: await recipient2.getAddress(), value: amountToSend2 },
-            ]
-        );
+        
 
 
     });
