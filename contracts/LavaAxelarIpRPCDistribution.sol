@@ -22,8 +22,7 @@ contract LavaAxelarIpRPCDistribution {
         for (uint256 i = 0; i < providers.length; i++) {
             address providerAddress = providers[i].name;
             uint256 amount = providers[i].value;
-            // Assuming the token follows ERC-20 standard transfer function
-            token.safeTransferFrom(msg.sender, providerAddress, amount);
+            token.safeTransfer(providerAddress, amount);
         }
     }
 
@@ -50,6 +49,14 @@ contract LavaAxelarIpRPCDistribution {
 
     function getBackupOwner() public view returns (address) {
         return backupOwner;
+    }
+
+    function deposit(uint _amount) public payable {
+        token.safeTransferFrom(msg.sender, address(this), _amount);
+    }
+
+    function getContractBalance() public view returns(uint){
+        return token.balanceOf(address(this));
     }
     
     struct Provider {
