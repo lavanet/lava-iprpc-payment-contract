@@ -11,8 +11,9 @@
   },
   "scripts": {
     "test": "npx hardhat compile; npx hardhat test",
-    "deploy_evmos": "npx hardhat run --network arbitrumt scripts/deploy_evmos.ts",
-    "deploy_axelar": "npx hardhat run --network arbitrumt scripts/deploy_axelar.ts"
+    "deploy_evmos": "npx hardhat run --network evmos scripts/deploy_evmos.ts",
+    "deploy_evmost": "npx hardhat run --network evmost scripts/deploy_evmos.ts",
+    "deploy_axelar": "npx hardhat run --network arbitrum scripts/deploy_axelar.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
